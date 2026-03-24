@@ -7,11 +7,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import dev.cleep.app.app.navigation.CleepNavHost
+import dev.cleep.app.core.designsystem.components.CleepAppBackground
 import dev.cleep.app.core.designsystem.theme.CleepTheme
 import dev.cleep.app.feature.auth.presentation.AuthViewModel
 import dev.cleep.app.feature.auth.presentation.AuthViewModelFactory
@@ -61,27 +63,28 @@ fun CleepApp() {
     }
 
     CleepTheme {
-        if (!warmupState.isReady) {
-            BackendWarmupScreen(
-                isLoading = warmupState.isLoading,
-                errorMessage = warmupState.errorMessage,
-                onRetry = { warmupAttempt += 1 },
-            )
-            return@CleepTheme
+        CleepAppBackground(modifier = Modifier) {
+            if (!warmupState.isReady) {
+                BackendWarmupScreen(
+                    isLoading = warmupState.isLoading,
+                    errorMessage = warmupState.errorMessage,
+                    onRetry = { warmupAttempt += 1 },
+                )
+            } else {
+                CleepNavHost(
+                    navController = navController,
+                    authState = authState,
+                    cleepsState = cleepsState,
+                    scope = scope,
+                    onLoginClick = authViewModel::signIn,
+                    onLogoutClick = authViewModel::signOut,
+                    onRefreshCleeps = cleepsViewModel::refresh,
+                    onCreateCleep = { content -> cleepsViewModel.createCleep(content).map { Unit } },
+                    onSelectProject = cleepsViewModel::selectProject,
+                    onDeleteCleep = cleepsViewModel::deleteCleep,
+                )
+            }
         }
-
-        CleepNavHost(
-            navController = navController,
-            authState = authState,
-            cleepsState = cleepsState,
-            scope = scope,
-            onLoginClick = authViewModel::signIn,
-            onLogoutClick = authViewModel::signOut,
-            onRefreshCleeps = cleepsViewModel::refresh,
-            onCreateCleep = { content -> cleepsViewModel.createCleep(content).map { Unit } },
-            onSelectProject = cleepsViewModel::selectProject,
-            onDeleteCleep = cleepsViewModel::deleteCleep,
-        )
     }
 }
 

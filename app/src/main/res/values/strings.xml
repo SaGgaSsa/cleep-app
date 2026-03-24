@@ -3,11 +3,12 @@
     <string name="nav_new">New</string>
     <string name="nav_cleeps">Cleeps</string>
     <string name="nav_settings">Settings</string>
-    <string name="login_tagline">OPERATIVE INBOX FOR CLEEPS</string>
-    <string name="login_description">Capture, review and process cleeps without visual noise. Built for fast developer workflows.</string>
-    <string name="login_section_auth">AUTH</string>
+    <string name="login_status">INITIALIZING CONNECTION...</string>
+    <string name="login_tagline">THE TERMINAL FOR YOUR THOUGHTS</string>
     <string name="login_continue_with_google">CONTINUE WITH GOOGLE</string>
-    <string name="backend_warmup_title">WAKING SERVER</string>
+    <string name="login_use_access_key">USE ACCESS KEY</string>
+    <string name="backend_warmup_status">INITIALIZING SERVER...</string>
+    <string name="backend_warmup_tagline">THE TERMINAL FOR YOUR THOUGHTS</string>
     <string name="common_error">Error: %1$s</string>
     <string name="common_cancel">CANCEL</string>
     <string name="common_delete">DELETE</string>

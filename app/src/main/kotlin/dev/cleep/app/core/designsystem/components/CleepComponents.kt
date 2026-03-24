@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,11 +28,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import dev.cleep.app.core.designsystem.theme.CleepSpacing
+
+@Composable
+fun CleepAppBackground(
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+            .drawTechGrid(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
+        content = content,
+    )
+}
 
 @Composable
 fun CleepScreenScaffold(
@@ -42,7 +59,6 @@ fun CleepScreenScaffold(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = CleepSpacing.space6, vertical = CleepSpacing.space8),
         verticalArrangement = Arrangement.spacedBy(verticalSpacing),
     ) {
@@ -228,4 +244,30 @@ fun CleepUnderlineField(
             cursorColor = MaterialTheme.colorScheme.primary,
         ),
     )
+}
+
+private fun Modifier.drawTechGrid(gridColor: Color): Modifier = drawBehind {
+    val cell = 40.dp.toPx()
+
+    var x = 0f
+    while (x <= size.width) {
+        drawLine(
+            color = gridColor,
+            start = Offset(x, 0f),
+            end = Offset(x, size.height),
+            strokeWidth = 1f,
+        )
+        x += cell
+    }
+
+    var y = 0f
+    while (y <= size.height) {
+        drawLine(
+            color = gridColor,
+            start = Offset(0f, y),
+            end = Offset(size.width, y),
+            strokeWidth = 1f,
+        )
+        y += cell
+    }
 }

@@ -16,6 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.cleep.app.R
@@ -50,6 +52,14 @@ fun CleepsListScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            androidx.compose.foundation.Image(
+                painter = painterResource(id = R.drawable.cleep_icon_mark),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(20.dp)
+                    .padding(end = CleepSpacing.space2),
+                contentScale = ContentScale.Fit,
+            )
             Text(
                 text = stringResource(R.string.feed_section_subtitle),
                 style = MaterialTheme.typography.bodyLarge,
