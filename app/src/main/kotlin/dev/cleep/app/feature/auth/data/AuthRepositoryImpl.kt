@@ -49,9 +49,9 @@ class AuthRepositoryImpl(
         val state = gitHubAuthClient.signIn(activity)
         val response = authStatusPoller.poll(state)
         return AuthSession(
-            apiKey = response.apiKey,
+            apiKey = checkNotNull(response.apiKey),
             user = AuthUser(
-                email = response.email,
+                email = checkNotNull(response.email),
                 displayName = response.displayName,
                 photoUrl = response.photoUrl,
             ),

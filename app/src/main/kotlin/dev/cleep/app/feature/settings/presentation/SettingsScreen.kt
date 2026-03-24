@@ -59,7 +59,8 @@ fun SettingsScreen(
                     verticalArrangement = Arrangement.spacedBy(CleepSpacing.space2),
                 ) {
                     Text(
-                        text = user?.displayName ?: stringResource(R.string.settings_user_unknown),
+                        text = user.displayNameForSettings()
+                            ?: stringResource(R.string.settings_user_unknown),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
@@ -75,16 +76,6 @@ fun SettingsScreen(
                 }
             }
         }
-
-        SettingsField(
-            label = stringResource(R.string.settings_user_label),
-            value = user?.displayName ?: stringResource(R.string.settings_user_unknown),
-        )
-
-        SettingsField(
-            label = stringResource(R.string.settings_email_label),
-            value = user?.email ?: stringResource(R.string.settings_email_unknown),
-        )
 
         CleepPrimaryButton(
             text = stringResource(R.string.settings_sign_out),
@@ -117,35 +108,8 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsField(
-    label: String,
-    value: String,
-) {
-    CleepPanel(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(CleepSpacing.space2),
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-    }
-}
-
-@Composable
 private fun ProfileAvatar(user: AuthUser?) {
-    val fallback = (user?.displayName ?: user?.email ?: "?")
+    val fallback = (user.displayNameForSettings() ?: user?.email ?: "?")
         .trim()
         .firstOrNull()
         ?.uppercase()
@@ -174,4 +138,20 @@ private fun ProfileAvatar(user: AuthUser?) {
             )
         }
     }
+}
+
+private fun AuthUser?.displayNameForSettings(): String? {
+    val displayName = this?.displayName?.trim()
+    if (!displayName.isNullOrEmpty()) {
+        return displayName
+    }
+
+    val emailName = this?.email
+        ?.substringBefore('@')
+        ?.replace('.', ' ')
+        ?.replace('_', ' ')
+        ?.trim()
+        ?.takeIf { it.isNotEmpty() }
+
+    return emailName
 }

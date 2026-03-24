@@ -1,6 +1,8 @@
 package dev.cleep.app.feature.auth.data
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.JsonNames
 import retrofit2.http.GET
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -11,7 +13,7 @@ interface AuthApi {
     suspend fun register(@Body request: RegisterRequest): RegisterResponse
 
     @GET("auth/status")
-    suspend fun authStatus(@Query("state") state: String): AuthStatusResponse
+    suspend fun authStatus(@Query("state") state: String): retrofit2.Response<AuthStatusResponse>
 }
 
 @Serializable
@@ -26,9 +28,13 @@ data class RegisterResponse(
 )
 
 @Serializable
+@OptIn(ExperimentalSerializationApi::class)
 data class AuthStatusResponse(
-    val apiKey: String,
-    val email: String,
+    val status: String? = null,
+    val apiKey: String? = null,
+    val email: String? = null,
+    @JsonNames("name", "login", "username", "userName")
     val displayName: String? = null,
+    @JsonNames("avatarUrl", "avatar_url", "image", "picture", "photo", "photoURL")
     val photoUrl: String? = null,
 )

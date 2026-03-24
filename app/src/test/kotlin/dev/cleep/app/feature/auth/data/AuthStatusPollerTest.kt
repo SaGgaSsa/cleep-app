@@ -14,12 +14,20 @@ class AuthStatusPollerTest {
     fun `returns auth status after pending responses`() = runTest {
         val api = FakeAuthApi(
             authStatusResponses = mutableListOf(
-                pendingResponse(),
-                pendingResponse(),
-                AuthStatusResponse(
-                    apiKey = "api-key",
-                    email = "dev@cleep.app",
-                    displayName = "Cleep Dev",
+                Response.success(
+                    202,
+                    AuthStatusResponse(status = "pending"),
+                ),
+                Response.success(
+                    202,
+                    AuthStatusResponse(status = "pending"),
+                ),
+                Response.success(
+                    AuthStatusResponse(
+                        apiKey = "api-key",
+                        email = "dev@cleep.app",
+                        displayName = "Cleep Dev",
+                    ),
                 ),
             ),
         )
@@ -42,7 +50,12 @@ class AuthStatusPollerTest {
     @Test
     fun `throws timeout when auth never completes`() = runTest {
         val api = FakeAuthApi(
-            authStatusResponses = MutableList(10) { pendingResponse() },
+            authStatusResponses = MutableList(10) {
+                Response.success(
+                    202,
+                    AuthStatusResponse(status = "pending"),
+                )
+            },
         )
         var now = 0L
         val poller = AuthStatusPoller(
@@ -64,7 +77,12 @@ class AuthStatusPollerTest {
     @Test
     fun `rethrows non pending http errors`() = runTest {
         val api = FakeAuthApi(
-            authStatusResponses = mutableListOf(serverErrorResponse()),
+            authStatusResponses = mutableListOf(
+                Response.error<AuthStatusResponse>(
+                    500,
+                    "".toResponseBody("text/plain".toMediaType()),
+                ),
+            ),
         )
         val poller = AuthStatusPoller(
             authApi = api,
@@ -82,17 +100,37 @@ class AuthStatusPollerTest {
         }
     }
 
-    private fun pendingResponse(): HttpException = httpException(404)
-
-    private fun serverErrorResponse(): HttpException = httpException(500)
-
-    private fun httpException(code: Int): HttpException {
-        return HttpException(
-            Response.error<Unit>(
-                code,
-                "".toResponseBody("text/plain".toMediaType()),
+    @Test
+    fun `keeps polling on legacy 404 pending responses`() = runTest {
+        val api = FakeAuthApi(
+            authStatusResponses = mutableListOf(
+                HttpException(
+                    Response.error<AuthStatusResponse>(
+                        404,
+                        "".toResponseBody("text/plain".toMediaType()),
+                    ),
+                ),
+                Response.success(
+                    AuthStatusResponse(
+                        apiKey = "api-key",
+                        email = "dev@cleep.app",
+                    ),
+                ),
             ),
         )
+        var now = 0L
+        val poller = AuthStatusPoller(
+            authApi = api,
+            pollIntervalMillis = 2_000,
+            timeoutMillis = 10_000,
+            timeProvider = { now },
+            sleeper = { delayMillis -> now += delayMillis },
+        )
+
+        val result = poller.poll("state-123")
+
+        assertEquals("api-key", result.apiKey)
+        assertEquals(2, api.authStatusCallCount)
     }
 }
 
@@ -106,10 +144,10 @@ private class FakeAuthApi(
         error("Not used in this test")
     }
 
-    override suspend fun authStatus(state: String): AuthStatusResponse {
+    override suspend fun authStatus(state: String): Response<AuthStatusResponse> {
         authStatusCallCount += 1
         return when (val response = authStatusResponses.removeFirst()) {
-            is AuthStatusResponse -> response
+            is Response<*> -> response as Response<AuthStatusResponse>
             is HttpException -> throw response
             else -> error("Unsupported fake response: $response")
         }
