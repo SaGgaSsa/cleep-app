@@ -39,6 +39,9 @@ fun AuthHeroScreen(
     secondaryActionLabel: String? = null,
     onSecondaryAction: (() -> Unit)? = null,
     secondaryActionEnabled: Boolean = true,
+    tertiaryActionLabel: String? = null,
+    onTertiaryAction: (() -> Unit)? = null,
+    tertiaryActionEnabled: Boolean = true,
     loading: Boolean = false,
     errorText: String? = null,
     footerContent: @Composable (() -> Unit)? = null,
@@ -94,6 +97,15 @@ fun AuthHeroScreen(
                         enabled = primaryActionEnabled,
                         loading = primaryActionLoading,
                         onClick = onPrimaryAction,
+                    )
+                }
+
+                if (tertiaryActionLabel != null && onTertiaryAction != null) {
+                    Spacer(modifier = Modifier.height(CleepSpacing.space5))
+                    HeroSecondaryButton(
+                        text = tertiaryActionLabel,
+                        enabled = tertiaryActionEnabled,
+                        onClick = onTertiaryAction,
                     )
                 }
 

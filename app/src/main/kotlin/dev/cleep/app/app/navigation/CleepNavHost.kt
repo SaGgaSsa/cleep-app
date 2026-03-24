@@ -2,7 +2,6 @@ package dev.cleep.app.app.navigation
 
 import android.app.Activity
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -32,7 +31,8 @@ fun CleepNavHost(
     authState: AuthUiState,
     cleepsState: CleepsUiState,
     scope: CoroutineScope,
-    onLoginClick: (Activity) -> Unit,
+    onGoogleLoginClick: (Activity) -> Unit,
+    onGitHubLoginClick: (Activity) -> Unit,
     onLogoutClick: () -> Unit,
     onRefreshCleeps: suspend () -> Unit,
     onCreateCleep: suspend (String) -> Result<Unit>,
@@ -56,7 +56,8 @@ fun CleepNavHost(
         composable(CleepDestination.Login.route) {
             LoginScreen(
                 state = authState,
-                onContinueClick = onLoginClick,
+                onGoogleClick = onGoogleLoginClick,
+                onGitHubClick = onGitHubLoginClick,
             )
         }
 

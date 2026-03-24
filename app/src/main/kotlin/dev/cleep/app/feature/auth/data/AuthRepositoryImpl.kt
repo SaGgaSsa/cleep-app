@@ -3,12 +3,15 @@ package dev.cleep.app.feature.auth.data
 import android.app.Activity
 import dev.cleep.app.feature.auth.domain.AuthRepository
 import dev.cleep.app.feature.auth.domain.AuthSession
+import dev.cleep.app.feature.auth.domain.AuthUser
 import retrofit2.HttpException
 
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val sessionStorage: SessionStorage,
     private val googleAuthClient: GoogleAuthClient,
+    private val gitHubAuthClient: GitHubAuthClient,
+    private val authStatusPoller: AuthStatusPoller,
 ) : AuthRepository {
     override suspend fun restoreSession(): AuthSession? = sessionStorage.readSession()
 
@@ -40,6 +43,19 @@ class AuthRepositoryImpl(
             }
             throw IllegalStateException(message, exception)
         }
+    }
+
+    override suspend fun signInWithGitHub(activity: Activity): AuthSession {
+        val state = gitHubAuthClient.signIn(activity)
+        val response = authStatusPoller.poll(state)
+        return AuthSession(
+            apiKey = response.apiKey,
+            user = AuthUser(
+                email = response.email,
+                displayName = response.displayName,
+                photoUrl = response.photoUrl,
+            ),
+        ).also(sessionStorage::saveSession)
     }
 
     override suspend fun signOut() {

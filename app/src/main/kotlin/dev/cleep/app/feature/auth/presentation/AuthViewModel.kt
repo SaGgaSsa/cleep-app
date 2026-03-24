@@ -56,6 +56,30 @@ class AuthViewModel(
         }
     }
 
+    fun signInWithGitHub(activity: Activity) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+            runCatching {
+                authRepository.signInWithGitHub(activity)
+            }.onSuccess { session ->
+                _state.value = AuthUiState(
+                    isLoading = false,
+                    isAuthenticated = true,
+                    user = session.user,
+                )
+            }.onFailure { error ->
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isAuthenticated = false,
+                        user = null,
+                        errorMessage = error.message ?: "Unknown auth error",
+                    )
+                }
+            }
+        }
+    }
+
     fun signOut() {
         viewModelScope.launch {
             authRepository.signOut()

@@ -9,7 +9,8 @@ import dev.cleep.app.R
 @Composable
 fun LoginScreen(
     state: AuthUiState,
-    onContinueClick: (Activity) -> Unit,
+    onGoogleClick: (Activity) -> Unit,
+    onGitHubClick: (Activity) -> Unit,
 ) {
     val activity = LocalContext.current as? Activity
 
@@ -17,9 +18,12 @@ fun LoginScreen(
         statusText = stringResource(R.string.login_status),
         taglineText = stringResource(R.string.login_tagline),
         primaryActionLabel = stringResource(R.string.login_continue_with_google),
-        onPrimaryAction = { activity?.let(onContinueClick) },
+        onPrimaryAction = { activity?.let(onGoogleClick) },
         primaryActionEnabled = activity != null && !state.isLoading,
         primaryActionLoading = state.isLoading,
+        tertiaryActionLabel = stringResource(R.string.login_continue_with_github),
+        onTertiaryAction = { activity?.let(onGitHubClick) },
+        tertiaryActionEnabled = activity != null && !state.isLoading,
         secondaryActionLabel = stringResource(R.string.login_use_access_key),
         onSecondaryAction = {},
         secondaryActionEnabled = false,

@@ -5,7 +5,9 @@ import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dev.cleep.app.BuildConfig
 import dev.cleep.app.feature.auth.data.AuthApi
+import dev.cleep.app.feature.auth.data.AuthStatusPoller
 import dev.cleep.app.feature.auth.data.AuthRepositoryImpl
+import dev.cleep.app.feature.auth.data.GitHubAuthClient
 import dev.cleep.app.feature.auth.data.GoogleAuthClient
 import dev.cleep.app.feature.auth.data.SessionStorage
 import dev.cleep.app.feature.cleeps.data.CleepsApi
@@ -66,10 +68,14 @@ class AppContainer(context: Context) {
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 
+    private val authApi = retrofit.create(AuthApi::class.java)
+
     val authRepository = AuthRepositoryImpl(
-        authApi = retrofit.create(AuthApi::class.java),
+        authApi = authApi,
         sessionStorage = sessionStorage,
         googleAuthClient = GoogleAuthClient(context),
+        gitHubAuthClient = GitHubAuthClient(),
+        authStatusPoller = AuthStatusPoller(authApi),
     )
 
     val cleepsRepository = CleepsRepositoryImpl(

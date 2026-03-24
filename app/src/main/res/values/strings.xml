@@ -6,6 +6,7 @@
     <string name="login_status">INITIALIZING CONNECTION...</string>
     <string name="login_tagline">THE TERMINAL FOR YOUR THOUGHTS</string>
     <string name="login_continue_with_google">CONTINUE WITH GOOGLE</string>
+    <string name="login_continue_with_github">CONTINUE WITH GITHUB</string>
     <string name="login_use_access_key">USE ACCESS KEY</string>
     <string name="backend_warmup_status">INITIALIZING SERVER...</string>
     <string name="backend_warmup_tagline">THE TERMINAL FOR YOUR THOUGHTS</string>
