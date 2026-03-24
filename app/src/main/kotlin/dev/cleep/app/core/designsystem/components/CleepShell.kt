@@ -32,7 +32,12 @@ fun CleepBottomBar(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .padding(horizontal = CleepSpacing.space3, vertical = CleepSpacing.space3),
+            .padding(
+                start = CleepSpacing.space3,
+                top = CleepSpacing.space3,
+                end = CleepSpacing.space3,
+                bottom = CleepSpacing.space4,
+            ),
         horizontalArrangement = Arrangement.spacedBy(CleepSpacing.space2),
     ) {
         items.forEach { (destination, label) ->
@@ -52,7 +57,10 @@ fun CleepBottomBar(
                         indication = null,
                         onClick = { onNavigate(destination) },
                     )
-                    .padding(vertical = CleepSpacing.space2),
+                    .padding(
+                        top = CleepSpacing.space2,
+                        bottom = CleepSpacing.space3,
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
