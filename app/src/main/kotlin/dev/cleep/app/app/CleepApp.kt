@@ -50,7 +50,7 @@ fun CleepApp() {
         )
     }
 
-    LaunchedEffect(authState.isAuthenticated) {
+    LaunchedEffect(authState.isAuthenticated, warmupState.isReady) {
         if (warmupState.isReady && authState.isAuthenticated) {
             cleepsViewModel.refresh()
         } else {

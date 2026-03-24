@@ -22,7 +22,6 @@ import dev.cleep.app.R
 import dev.cleep.app.core.designsystem.components.CleepPanel
 import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
 import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
-import dev.cleep.app.core.designsystem.components.CleepSectionLabel
 import dev.cleep.app.core.designsystem.components.CleepSecondaryButton
 import dev.cleep.app.core.designsystem.theme.CleepSpacing
 import dev.cleep.app.feature.auth.domain.AuthUser
@@ -39,7 +38,6 @@ fun SettingsScreen(
         modifier = modifier,
         verticalSpacing = CleepSpacing.space8,
     ) {
-        CleepSectionLabel(text = stringResource(R.string.settings_section_title))
         Text(
             text = stringResource(R.string.settings_section_title),
             style = MaterialTheme.typography.headlineLarge,

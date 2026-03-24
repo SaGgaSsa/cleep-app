@@ -16,7 +16,6 @@ import dev.cleep.app.R
 import dev.cleep.app.core.designsystem.components.CleepPanel
 import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
 import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
-import dev.cleep.app.core.designsystem.components.CleepSectionLabel
 import dev.cleep.app.core.designsystem.components.CleepUnderlineField
 import dev.cleep.app.core.designsystem.theme.CleepSpacing
 import kotlinx.coroutines.CoroutineScope
@@ -32,14 +31,12 @@ fun HomeScreen(
 ) {
     var content by rememberSaveable { mutableStateOf("") }
     val trimmedContent = content.trim()
-    val savedMessage = stringResource(R.string.home_saved_message)
     val genericCreateError = stringResource(R.string.common_error, "Create failed")
 
     CleepScreenScaffold(
         modifier = modifier,
         verticalSpacing = CleepSpacing.space8,
     ) {
-        CleepSectionLabel(text = stringResource(R.string.home_section_new_cleep))
         Text(
             text = stringResource(R.string.home_section_new_cleep).uppercase(),
             style = MaterialTheme.typography.headlineLarge,
@@ -48,6 +45,12 @@ fun HomeScreen(
         CleepPanel(
             modifier = Modifier.weight(1f),
             color = MaterialTheme.colorScheme.surfaceContainerLow,
+            contentPadding = PaddingValues(
+                start = CleepSpacing.space5,
+                top = CleepSpacing.space4,
+                end = CleepSpacing.space5,
+                bottom = CleepSpacing.space1,
+            ),
         ) {
             CleepUnderlineField(
                 value = content,
@@ -65,7 +68,6 @@ fun HomeScreen(
                     onCreateCleep(trimmedContent)
                         .onSuccess {
                             content = ""
-                            snackbarHostState.showSnackbar(message = savedMessage)
                         }
                         .onFailure { error ->
                             snackbarHostState.showSnackbar(

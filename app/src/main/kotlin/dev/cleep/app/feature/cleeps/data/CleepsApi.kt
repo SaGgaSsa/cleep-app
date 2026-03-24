@@ -2,8 +2,8 @@ package dev.cleep.app.feature.cleeps.data
 
 import kotlinx.serialization.Serializable
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.POST
 
 interface CleepsApi {
@@ -13,7 +13,7 @@ interface CleepsApi {
     @POST("cleeps")
     suspend fun createCleep(@Body request: CreateCleepRequest): CleepDto
 
-    @DELETE("cleeps")
+    @HTTP(method = "DELETE", path = "cleeps", hasBody = true)
     suspend fun deleteCleep(@Body request: DeleteCleepRequest)
 }
 

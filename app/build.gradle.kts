@@ -36,6 +36,7 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
+            resValue("string", "app_name", "CLEEP DEBUG")
         }
         release {
             isMinifyEnabled = false

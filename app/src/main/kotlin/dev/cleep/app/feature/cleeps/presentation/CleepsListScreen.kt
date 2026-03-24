@@ -17,11 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import dev.cleep.app.R
 import dev.cleep.app.core.designsystem.components.CleepPanel
 import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
 import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
-import dev.cleep.app.core.designsystem.components.CleepSectionLabel
 import dev.cleep.app.core.designsystem.components.CleepSecondaryButton
 import dev.cleep.app.core.designsystem.components.CleepTextAction
 import dev.cleep.app.core.designsystem.theme.CleepSpacing
@@ -44,7 +44,6 @@ fun CleepsListScreen(
 ) {
     val locale = LocalConfiguration.current.locales[0] ?: Locale.getDefault()
     val deleteErrorTemplate = stringResource(R.string.feed_delete_error, "%s")
-    val deleteSuccess = stringResource(R.string.feed_delete_success)
     val deleteLoading = stringResource(R.string.feed_delete_loading)
     val formatter = remember(locale) {
         DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
@@ -57,7 +56,6 @@ fun CleepsListScreen(
         modifier = modifier,
         verticalSpacing = CleepSpacing.space8,
     ) {
-        CleepSectionLabel(text = stringResource(R.string.feed_section_subtitle))
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -131,9 +129,7 @@ fun CleepsListScreen(
                         pendingDeleteId = null
                         scope.launch {
                             onDelete(id)
-                                .onSuccess {
-                                    snackbarHostState.showSnackbar(message = deleteSuccess)
-                                }
+                                .onSuccess { }
                                 .onFailure { error ->
                                     snackbarHostState.showSnackbar(
                                         message = deleteErrorTemplate.replace(
@@ -196,23 +192,35 @@ private fun CleepCard(
 ) {
     CleepPanel(color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(CleepSpacing.space3),
         ) {
-            Text(
-                text = formatter.format(cleep.createdAt),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
             Text(
                 text = cleep.content,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            CleepSecondaryButton(
-                text = if (isDeleting) deleteLoading else stringResource(R.string.feed_delete),
-                onClick = onDeleteClick,
-                enabled = !isDeleting,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = formatter.format(cleep.createdAt),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Box(
+                    modifier = Modifier.widthIn(min = 120.dp),
+                    contentAlignment = Alignment.CenterEnd,
+                ) {
+                    CleepSecondaryButton(
+                        text = if (isDeleting) deleteLoading else stringResource(R.string.feed_delete),
+                        onClick = onDeleteClick,
+                        enabled = !isDeleting,
+                    )
+                }
+            }
         }
     }
 }
