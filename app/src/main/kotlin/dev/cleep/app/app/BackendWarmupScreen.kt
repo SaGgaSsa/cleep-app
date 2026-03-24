@@ -1,18 +1,16 @@
 package dev.cleep.app.app
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import dev.cleep.app.R
+import dev.cleep.app.core.designsystem.components.CleepPanel
+import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
+import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
+import dev.cleep.app.core.designsystem.components.CleepSectionLabel
+import dev.cleep.app.core.designsystem.theme.CleepSpacing
 
 @Composable
 fun BackendWarmupScreen(
@@ -20,27 +18,20 @@ fun BackendWarmupScreen(
     errorMessage: String?,
     onRetry: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.backend_warmup_section_title),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-        )
+    CleepScreenScaffold(verticalSpacing = CleepSpacing.space8) {
+        CleepSectionLabel(text = stringResource(R.string.backend_warmup_section_title))
         Text(
             text = stringResource(R.string.backend_warmup_title),
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.displayLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        Text(
-            text = stringResource(R.string.backend_warmup_description),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        CleepPanel(color = MaterialTheme.colorScheme.surfaceContainer) {
+            Text(
+                text = stringResource(R.string.backend_warmup_description),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
 
         if (isLoading) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
@@ -55,9 +46,10 @@ fun BackendWarmupScreen(
         }
 
         if (!isLoading) {
-            Button(onClick = onRetry) {
-                Text(text = stringResource(R.string.feed_retry))
-            }
+            CleepPrimaryButton(
+                text = stringResource(R.string.feed_retry),
+                onClick = onRetry,
+            )
         }
     }
 }

@@ -1,21 +1,9 @@
 package dev.cleep.app.feature.settings.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +19,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import dev.cleep.app.R
+import dev.cleep.app.core.designsystem.components.CleepPanel
+import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
+import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
+import dev.cleep.app.core.designsystem.components.CleepSectionLabel
+import dev.cleep.app.core.designsystem.components.CleepSecondaryButton
+import dev.cleep.app.core.designsystem.theme.CleepSpacing
 import dev.cleep.app.feature.auth.domain.AuthUser
 
 @Composable
@@ -42,30 +35,30 @@ fun SettingsScreen(
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+    CleepScreenScaffold(
+        modifier = modifier,
+        verticalSpacing = CleepSpacing.space8,
     ) {
+        CleepSectionLabel(text = stringResource(R.string.settings_section_title))
         Text(
             text = stringResource(R.string.settings_section_title),
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
 
-        ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        CleepPanel(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surfaceContainer,
+        ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(CleepSpacing.space4),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 ProfileAvatar(user = user)
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(CleepSpacing.space2),
                 ) {
                     Text(
                         text = user?.displayName ?: stringResource(R.string.settings_user_unknown),
@@ -95,16 +88,10 @@ fun SettingsScreen(
             value = user?.email ?: stringResource(R.string.settings_email_unknown),
         )
 
-        Button(
+        CleepPrimaryButton(
+            text = stringResource(R.string.settings_sign_out),
             onClick = { showLogoutDialog = true },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            ),
-        ) {
-            Text(text = stringResource(R.string.settings_sign_out))
-        }
+        )
     }
 
     if (showLogoutDialog) {
@@ -113,19 +100,19 @@ fun SettingsScreen(
             title = { Text(stringResource(R.string.settings_sign_out_title)) },
             text = { Text(stringResource(R.string.settings_sign_out_confirmation)) },
             confirmButton = {
-                Button(
+                CleepPrimaryButton(
+                    text = stringResource(R.string.settings_sign_out),
                     onClick = {
                         showLogoutDialog = false
                         onLogoutClick()
                     },
-                ) {
-                    Text(stringResource(R.string.settings_sign_out))
-                }
+                )
             },
             dismissButton = {
-                OutlinedButton(onClick = { showLogoutDialog = false }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
+                CleepSecondaryButton(
+                    text = stringResource(R.string.common_cancel),
+                    onClick = { showLogoutDialog = false },
+                )
             },
         )
     }
@@ -136,12 +123,13 @@ private fun SettingsField(
     label: String,
     value: String,
 ) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+    CleepPanel(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(CleepSpacing.space2),
         ) {
             Text(
                 text = label,
@@ -171,7 +159,6 @@ private fun ProfileAvatar(user: AuthUser?) {
             contentDescription = stringResource(R.string.settings_avatar_description),
             modifier = Modifier
                 .size(64.dp)
-                .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceContainerHighest),
             contentScale = ContentScale.Crop,
         )
@@ -179,7 +166,6 @@ private fun ProfileAvatar(user: AuthUser?) {
         Box(
             modifier = Modifier
                 .size(64.dp)
-                .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center,
         ) {

@@ -1,12 +1,6 @@
 package dev.cleep.app.feature.auth.presentation
 
 import android.app.Activity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,6 +10,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.cleep.app.R
+import dev.cleep.app.core.designsystem.components.CleepPanel
+import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
+import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
+import dev.cleep.app.core.designsystem.components.CleepSectionLabel
+import dev.cleep.app.core.designsystem.theme.CleepSpacing
 
 @Composable
 fun LoginScreen(
@@ -24,27 +23,20 @@ fun LoginScreen(
 ) {
     val activity = LocalContext.current as? Activity
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.login_section_auth),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-        )
+    CleepScreenScaffold(verticalSpacing = CleepSpacing.space8) {
+        CleepSectionLabel(text = stringResource(R.string.login_section_auth))
         Text(
             text = stringResource(R.string.login_tagline),
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.displayLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        Text(
-            text = stringResource(R.string.login_description),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        CleepPanel(color = MaterialTheme.colorScheme.surfaceContainer) {
+            Text(
+                text = stringResource(R.string.login_description),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
 
         if (state.errorMessage != null) {
             Text(
@@ -54,22 +46,24 @@ fun LoginScreen(
             )
         }
 
-        Button(
+        CleepPrimaryButton(
+            text = stringResource(R.string.login_continue_with_google),
             onClick = { activity?.let(onContinueClick) },
             enabled = !state.isLoading && activity != null,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            ),
-        ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    strokeWidth = 2.dp,
-                )
-            } else {
-                Text(text = stringResource(R.string.login_continue_with_google))
-            }
-        }
+            trailingContent = {
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp,
+                    )
+                } else {
+                    Text(
+                        text = "[GOOGLE]",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
+            },
+        )
     }
 }

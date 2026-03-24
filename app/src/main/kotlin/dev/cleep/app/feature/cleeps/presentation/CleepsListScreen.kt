@@ -1,25 +1,11 @@
 package dev.cleep.app.feature.cleeps.presentation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DeleteOutline
-import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,12 +17,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import dev.cleep.app.R
+import dev.cleep.app.core.designsystem.components.CleepPanel
+import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
+import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
+import dev.cleep.app.core.designsystem.components.CleepSectionLabel
+import dev.cleep.app.core.designsystem.components.CleepSecondaryButton
+import dev.cleep.app.core.designsystem.components.CleepTextAction
+import dev.cleep.app.core.designsystem.theme.CleepSpacing
 import dev.cleep.app.feature.cleeps.domain.Cleep
 import java.time.ZoneId
-import java.time.format.FormatStyle
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -61,31 +53,31 @@ fun CleepsListScreen(
     }
     var pendingDeleteId by remember { mutableStateOf<String?>(null) }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+    CleepScreenScaffold(
+        modifier = modifier,
+        verticalSpacing = CleepSpacing.space8,
     ) {
+        CleepSectionLabel(text = stringResource(R.string.feed_section_subtitle))
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(R.string.feed_section_subtitle),
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
             )
-            IconButton(onClick = { scope.launch { onRefresh() } }) {
-                Icon(Icons.Outlined.Refresh, contentDescription = stringResource(R.string.feed_retry))
-            }
+            CleepTextAction(
+                text = stringResource(R.string.feed_retry),
+                onClick = { scope.launch { onRefresh() } },
+            )
         }
 
         when {
             state.isLoading && state.items.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
 
@@ -107,7 +99,7 @@ fun CleepsListScreen(
 
             else -> {
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(CleepSpacing.space12),
                 ) {
                     items(
                         items = state.items,
@@ -132,9 +124,10 @@ fun CleepsListScreen(
             title = { Text(stringResource(R.string.feed_delete_title)) },
             text = { Text(stringResource(R.string.feed_delete_confirmation)) },
             confirmButton = {
-                Button(
+                CleepPrimaryButton(
+                    text = stringResource(R.string.common_delete),
                     onClick = {
-                        val id = pendingDeleteId ?: return@Button
+                        val id = pendingDeleteId ?: return@CleepPrimaryButton
                         pendingDeleteId = null
                         scope.launch {
                             onDelete(id)
@@ -151,14 +144,13 @@ fun CleepsListScreen(
                                 }
                         }
                     },
-                ) {
-                    Text(stringResource(R.string.common_delete))
-                }
+                )
             },
             dismissButton = {
-                OutlinedButton(onClick = { pendingDeleteId = null }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
+                CleepSecondaryButton(
+                    text = stringResource(R.string.common_cancel),
+                    onClick = { pendingDeleteId = null },
+                )
             },
         )
     }
@@ -172,10 +164,9 @@ private fun StatusCard(
     onActionClick: (() -> Unit)? = null,
 ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        ElevatedCard {
+        CleepPanel(color = MaterialTheme.colorScheme.surfaceContainer) {
             Column(
-                modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(CleepSpacing.space3),
             ) {
                 Text(
                     text = title,
@@ -188,9 +179,7 @@ private fun StatusCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 if (actionLabel != null && onActionClick != null) {
-                    Button(onClick = onActionClick) {
-                        Text(actionLabel)
-                    }
+                    CleepPrimaryButton(text = actionLabel, onClick = onActionClick)
                 }
             }
         }
@@ -205,10 +194,9 @@ private fun CleepCard(
     deleteLoading: String,
     onDeleteClick: () -> Unit,
 ) {
-    ElevatedCard {
+    CleepPanel(color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(CleepSpacing.space3),
         ) {
             Text(
                 text = formatter.format(cleep.createdAt),
@@ -220,17 +208,11 @@ private fun CleepCard(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            OutlinedButton(
+            CleepSecondaryButton(
+                text = if (isDeleting) deleteLoading else stringResource(R.string.feed_delete),
                 onClick = onDeleteClick,
                 enabled = !isDeleting,
-                modifier = Modifier.align(Alignment.End),
-            ) {
-                Icon(Icons.Outlined.DeleteOutline, contentDescription = null)
-                Text(
-                    text = if (isDeleting) deleteLoading else stringResource(R.string.feed_delete),
-                    modifier = Modifier.padding(start = 8.dp),
-                )
-            }
+            )
         }
     }
 }
