@@ -35,6 +35,7 @@ fun CleepNavHost(
     onLogoutClick: () -> Unit,
     onRefreshCleeps: suspend () -> Unit,
     onCreateCleep: suspend (String) -> Result<Unit>,
+    onSelectProject: (String?) -> Unit,
     onDeleteCleep: suspend (String) -> Result<Unit>,
 ) {
     LaunchedEffect(authState.isAuthenticated) {
@@ -66,6 +67,7 @@ fun CleepNavHost(
                     snackbarHostState = snackbarHostState,
                     scope = scope,
                     onCreateCleep = onCreateCleep,
+                    onSelectProject = onSelectProject,
                 )
             }
         }

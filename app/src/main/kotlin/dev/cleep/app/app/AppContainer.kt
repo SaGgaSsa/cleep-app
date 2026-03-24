@@ -10,6 +10,9 @@ import dev.cleep.app.feature.auth.data.GoogleAuthClient
 import dev.cleep.app.feature.auth.data.SessionStorage
 import dev.cleep.app.feature.cleeps.data.CleepsApi
 import dev.cleep.app.feature.cleeps.data.CleepsRepositoryImpl
+import dev.cleep.app.feature.projects.data.ProjectsApi
+import dev.cleep.app.feature.projects.data.ProjectsRepositoryImpl
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -18,6 +21,7 @@ import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 import retrofit2.Retrofit
 
+@OptIn(ExperimentalSerializationApi::class)
 class AppContainer(context: Context) {
     private val sessionStorage = SessionStorage(context)
 
@@ -53,6 +57,7 @@ class AppContainer(context: Context) {
 
     private val json = Json {
         ignoreUnknownKeys = true
+        explicitNulls = false
     }
 
     private val retrofit = Retrofit.Builder()
@@ -69,6 +74,10 @@ class AppContainer(context: Context) {
 
     val cleepsRepository = CleepsRepositoryImpl(
         api = retrofit.create(CleepsApi::class.java),
+    )
+
+    val projectsRepository = ProjectsRepositoryImpl(
+        api = retrofit.create(ProjectsApi::class.java),
     )
 
     private val healthApi = retrofit.create(HealthApi::class.java)

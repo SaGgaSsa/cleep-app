@@ -7,6 +7,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.cleep.app.R
@@ -26,10 +26,6 @@ import dev.cleep.app.core.designsystem.components.CleepSecondaryButton
 import dev.cleep.app.core.designsystem.components.CleepTextAction
 import dev.cleep.app.core.designsystem.theme.CleepSpacing
 import dev.cleep.app.feature.cleeps.domain.Cleep
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -42,14 +38,8 @@ fun CleepsListScreen(
     onDelete: suspend (String) -> Result<Unit>,
     modifier: Modifier = Modifier,
 ) {
-    val locale = LocalConfiguration.current.locales[0] ?: Locale.getDefault()
     val deleteErrorTemplate = stringResource(R.string.feed_delete_error, "%s")
     val deleteLoading = stringResource(R.string.feed_delete_loading)
-    val formatter = remember(locale) {
-        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-            .withLocale(locale)
-            .withZone(ZoneId.systemDefault())
-    }
     var pendingDeleteId by remember { mutableStateOf<String?>(null) }
 
     CleepScreenScaffold(
@@ -105,7 +95,6 @@ fun CleepsListScreen(
                     ) { cleep ->
                         CleepCard(
                             cleep = cleep,
-                            formatter = formatter,
                             isDeleting = cleep.id in state.deletingIds,
                             deleteLoading = deleteLoading,
                             onDeleteClick = { pendingDeleteId = cleep.id },
@@ -185,7 +174,6 @@ private fun StatusCard(
 @Composable
 private fun CleepCard(
     cleep: Cleep,
-    formatter: DateTimeFormatter,
     isDeleting: Boolean,
     deleteLoading: String,
     onDeleteClick: () -> Unit,
@@ -205,11 +193,12 @@ private fun CleepCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = formatter.format(cleep.createdAt),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
+                val projectName = cleep.projectName?.trim()?.takeIf { it.isNotEmpty() }
+                if (projectName != null) {
+                    ProjectBadge(projectName = projectName)
+                } else {
+                    Spacer(modifier = Modifier.width(1.dp))
+                }
                 Box(
                     modifier = Modifier.widthIn(min = 120.dp),
                     contentAlignment = Alignment.CenterEnd,
@@ -222,5 +211,19 @@ private fun CleepCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ProjectBadge(projectName: String) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = MaterialTheme.colorScheme.primary,
+    ) {
+        Text(
+            text = projectName.uppercase(),
+            modifier = Modifier.padding(horizontal = CleepSpacing.space3, vertical = CleepSpacing.space1),
+            style = MaterialTheme.typography.labelMedium,
+        )
     }
 }

@@ -12,6 +12,7 @@
     <string name="common_cancel">CANCEL</string>
     <string name="common_delete">DELETE</string>
     <string name="home_section_new_cleep">New cleep</string>
+    <string name="home_project_no_project">NO PROJECT</string>
     <string name="home_input_hint">What is on your mind?</string>
     <string name="home_save_cleep">SAVE CLEEP</string>
     <string name="home_saved_message">Cleep saved</string>

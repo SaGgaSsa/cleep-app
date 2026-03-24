@@ -1,6 +1,5 @@
 package dev.cleep.app.app
 
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
@@ -29,7 +28,10 @@ fun CleepApp() {
         factory = AuthViewModelFactory(appContainer.authRepository),
     )
     val cleepsViewModel: CleepsViewModel = viewModel(
-        factory = CleepsViewModelFactory(appContainer.cleepsRepository),
+        factory = CleepsViewModelFactory(
+            repository = appContainer.cleepsRepository,
+            projectsRepository = appContainer.projectsRepository,
+        ),
     )
     val authState by authViewModel.state.collectAsStateWithLifecycle()
     val cleepsState by cleepsViewModel.state.collectAsStateWithLifecycle()
@@ -76,9 +78,8 @@ fun CleepApp() {
             onLoginClick = authViewModel::signIn,
             onLogoutClick = authViewModel::signOut,
             onRefreshCleeps = cleepsViewModel::refresh,
-            onCreateCleep = { content ->
-                cleepsViewModel.createCleep(content).map { Unit }
-            },
+            onCreateCleep = { content -> cleepsViewModel.createCleep(content).map { Unit } },
+            onSelectProject = cleepsViewModel::selectProject,
             onDeleteCleep = cleepsViewModel::deleteCleep,
         )
     }

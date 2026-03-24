@@ -25,6 +25,7 @@ data class GetCleepsResponse(
 @Serializable
 data class CreateCleepRequest(
     val content: String,
+    val project: String? = null,
 )
 
 @Serializable
@@ -37,5 +38,11 @@ data class CleepDto(
     val id: String,
     val userId: String,
     val content: String,
+    val project: CleepProjectDto? = null,
     val createdAt: String,
+)
+
+@Serializable
+data class CleepProjectDto(
+    val name: String,
 )
