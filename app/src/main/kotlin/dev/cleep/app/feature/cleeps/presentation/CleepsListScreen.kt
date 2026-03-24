@@ -62,7 +62,7 @@ fun CleepsListScreen(
         ) {
             Text(
                 text = stringResource(R.string.feed_section_subtitle),
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
             )

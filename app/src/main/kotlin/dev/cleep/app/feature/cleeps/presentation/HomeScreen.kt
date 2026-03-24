@@ -39,7 +39,7 @@ fun HomeScreen(
     ) {
         Text(
             text = stringResource(R.string.home_section_new_cleep).uppercase(),
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
         CleepPanel(

@@ -40,7 +40,7 @@ fun SettingsScreen(
     ) {
         Text(
             text = stringResource(R.string.settings_section_title),
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
 
