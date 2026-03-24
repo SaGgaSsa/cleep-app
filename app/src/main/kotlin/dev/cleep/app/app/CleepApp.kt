@@ -4,8 +4,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,6 +23,8 @@ import dev.cleep.app.feature.cleeps.presentation.CleepsViewModelFactory
 fun CleepApp() {
     val appContext = LocalContext.current.applicationContext
     val appContainer = remember(appContext) { AppContainer(appContext) }
+    var warmupAttempt by remember { mutableIntStateOf(0) }
+    var warmupState by remember { androidx.compose.runtime.mutableStateOf(BackendWarmupUiState()) }
     val authViewModel: AuthViewModel = viewModel(
         factory = AuthViewModelFactory(appContainer.authRepository),
     )
@@ -32,8 +36,22 @@ fun CleepApp() {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
 
+    LaunchedEffect(appContainer, warmupAttempt) {
+        warmupState = BackendWarmupUiState(isLoading = true)
+        warmupState = appContainer.awaitBackendWarmup().fold(
+            onSuccess = { BackendWarmupUiState(isLoading = false, isReady = true) },
+            onFailure = { error ->
+                BackendWarmupUiState(
+                    isLoading = false,
+                    isReady = false,
+                    errorMessage = error.message ?: "Backend warmup failed",
+                )
+            },
+        )
+    }
+
     LaunchedEffect(authState.isAuthenticated) {
-        if (authState.isAuthenticated) {
+        if (warmupState.isReady && authState.isAuthenticated) {
             cleepsViewModel.refresh()
         } else {
             cleepsViewModel.clear()
@@ -41,6 +59,15 @@ fun CleepApp() {
     }
 
     CleepTheme {
+        if (!warmupState.isReady) {
+            BackendWarmupScreen(
+                isLoading = warmupState.isLoading,
+                errorMessage = warmupState.errorMessage,
+                onRetry = { warmupAttempt += 1 },
+            )
+            return@CleepTheme
+        }
+
         CleepNavHost(
             navController = navController,
             authState = authState,
@@ -56,3 +83,9 @@ fun CleepApp() {
         )
     }
 }
+
+private data class BackendWarmupUiState(
+    val isLoading: Boolean = true,
+    val isReady: Boolean = false,
+    val errorMessage: String? = null,
+)

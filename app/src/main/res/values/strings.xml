@@ -7,6 +7,9 @@
     <string name="login_description">Capture, review and process cleeps without visual noise. Built for fast developer workflows.</string>
     <string name="login_section_auth">AUTH</string>
     <string name="login_continue_with_google">CONTINUE WITH GOOGLE</string>
+    <string name="backend_warmup_section_title">BACKEND</string>
+    <string name="backend_warmup_title">WAKING SERVER</string>
+    <string name="backend_warmup_description">Checking /health before sign-in. After idle, the server can take up to 50 seconds to become available.</string>
     <string name="common_error">Error: %1$s</string>
     <string name="common_cancel">CANCEL</string>
     <string name="common_delete">DELETE</string>

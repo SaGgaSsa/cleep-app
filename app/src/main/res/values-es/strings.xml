@@ -7,6 +7,9 @@
     <string name="login_description">Captura, revisa y procesa cleeps sin ruido visual. Pensado para workflows rápidos de developers.</string>
     <string name="login_section_auth">AUTH</string>
     <string name="login_continue_with_google">CONTINUAR CON GOOGLE</string>
+    <string name="backend_warmup_section_title">BACKEND</string>
+    <string name="backend_warmup_title">LEVANTANDO SERVER</string>
+    <string name="backend_warmup_description">Chequeando /health antes del login. Después de estar idle, el server puede tardar hasta 50 segundos en quedar disponible.</string>
     <string name="common_error">Error: %1$s</string>
     <string name="common_cancel">CANCELAR</string>
     <string name="common_delete">BORRAR</string>
