@@ -3,17 +3,17 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-ANDROID_DIR="$ROOT_DIR/android-native"
-ENV_FILE="$ANDROID_DIR/.env.dev"
-GRADLEW="$ANDROID_DIR/gradlew"
-LOCAL_PROPERTIES_FILE="$ANDROID_DIR/local.properties"
+PROJECT_DIR="$ROOT_DIR"
+ENV_FILE="$PROJECT_DIR/.env.dev"
+GRADLEW="$PROJECT_DIR/gradlew"
+LOCAL_PROPERTIES_FILE="$PROJECT_DIR/local.properties"
 
 if [[ ! -f "$ENV_FILE" ]]; then
   cat <<EOF
 Missing $ENV_FILE
 
 Create it from:
-  $ANDROID_DIR/.env.example
+  $PROJECT_DIR/.env.example
 EOF
   exit 1
 fi
@@ -71,8 +71,7 @@ if [[ ! -x "$GRADLEW" ]]; then
 Android native Gradle wrapper not found at:
   $GRADLEW
 
-This repo already defines the CLI workflow, but the Compose project has not been created yet.
-Next step: bootstrap the Android native project inside android-native/ and add gradlew there.
+This repo is missing the Gradle wrapper in the project root.
 EOF
   exit 1
 fi
@@ -101,7 +100,7 @@ cat >"$LOCAL_PROPERTIES_FILE" <<EOF
 sdk.dir=$SDK_DIR
 EOF
 
-cd "$ANDROID_DIR"
+cd "$PROJECT_DIR"
 
 "$GRADLEW" \
   -Pcleep.baseUrl="$BASE_URL" \

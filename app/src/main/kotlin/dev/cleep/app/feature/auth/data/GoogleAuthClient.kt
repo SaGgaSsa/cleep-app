@@ -6,6 +6,7 @@ import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import dev.cleep.app.BuildConfig
@@ -29,10 +30,14 @@ class GoogleAuthClient(
             .addCredentialOption(signInWithGoogleOption)
             .build()
 
-        val result = credentialManager.getCredential(
-            context = activity,
-            request = request,
-        )
+        val result = try {
+            credentialManager.getCredential(
+                context = activity,
+                request = request,
+            )
+        } catch (error: GetCredentialException) {
+            throw mapSignInError(error)
+        }
 
         val credential = result.credential
         if (credential is CustomCredential &&
@@ -63,5 +68,20 @@ class GoogleAuthClient(
         return Base64.getUrlEncoder()
             .withoutPadding()
             .encodeToString(randomBytes)
+    }
+
+    private fun mapSignInError(error: GetCredentialException): Throwable {
+        val message = error.message.orEmpty()
+        if (
+            message.contains("account reauth failed", ignoreCase = true) ||
+            message.contains("error 16", ignoreCase = true)
+        ) {
+            return IllegalStateException(
+                "Google login is not configured for package ${appContext.packageName}. Check the Android OAuth client package name, signing SHA, and GOOGLE_SERVER_CLIENT_ID.",
+                error,
+            )
+        }
+
+        return error
     }
 }
