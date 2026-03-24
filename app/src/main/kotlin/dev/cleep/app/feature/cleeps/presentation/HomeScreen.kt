@@ -3,6 +3,8 @@ package dev.cleep.app.feature.cleeps.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -16,8 +18,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
@@ -42,8 +47,12 @@ fun HomeScreen(
 ) {
     var content by rememberSaveable { mutableStateOf("") }
     val trimmedContent = content.trim()
+    val minCleepLength = 3
+    val canSave = trimmedContent.length >= minCleepLength && !state.isCreating
     val genericCreateError = stringResource(R.string.common_error, "Create failed")
     val noProjectLabel = stringResource(R.string.home_project_no_project)
+    val editorInteractionSource = remember { MutableInteractionSource() }
+    val editorFocused by editorInteractionSource.collectIsFocusedAsState()
 
     Column(
         modifier = modifier
@@ -71,26 +80,51 @@ fun HomeScreen(
                 projects = state.projects,
                 selectedProjectName = state.selectedProjectName,
                 noProjectLabel = noProjectLabel,
-                enabled = !state.isCreating,
+                enabled = !state.isCreating && state.projects.isNotEmpty(),
                 onProjectSelected = onSelectProject,
             )
         }
 
         CleepPanel(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .shadow(
+                    elevation = if (editorFocused) 22.dp else 0.dp,
+                    ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.28f),
+                    spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.34f),
+                )
+                .border(
+                    width = 1.dp,
+                    color = if (editorFocused) {
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)
+                    } else {
+                        MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.18f)
+                    },
+                ),
             color = MaterialTheme.colorScheme.surfaceContainerLow,
             contentPadding = PaddingValues(0.dp),
         ) {
-            CleepUnderlineField(
-                value = content,
-                onValueChange = { content = it },
-                modifier = Modifier.fillMaxSize(),
-                placeholder = stringResource(R.string.home_input_hint),
-                minLines = 12,
-                maxLines = Int.MAX_VALUE,
-                keyboardOptions = KeyboardOptions.Default,
-                showIndicator = false,
-            )
+            Box(modifier = Modifier.fillMaxSize()) {
+                CleepUnderlineField(
+                    value = content,
+                    onValueChange = { content = it },
+                    modifier = Modifier.fillMaxSize(),
+                    placeholder = stringResource(R.string.home_input_hint),
+                    minLines = 12,
+                    maxLines = Int.MAX_VALUE,
+                    keyboardOptions = KeyboardOptions.Default,
+                    showIndicator = false,
+                    interactionSource = editorInteractionSource,
+                )
+                Text(
+                    text = "CHAR_COUNT: ${content.length.toString().padStart(3, '0')}",
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(horizontal = CleepSpacing.space3, vertical = CleepSpacing.space2),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
+                )
+            }
         }
 
         CleepPrimaryButton(
@@ -109,10 +143,10 @@ fun HomeScreen(
                         }
                 }
             },
-            enabled = trimmedContent.isNotEmpty() && !state.isCreating,
+            enabled = canSave,
             trailingContent = {
                 Text(
-                    text = if (state.isCreating) "[SENDING]" else "[SAVE]",
+                    text = if (state.isCreating) "[SENDING]" else "->",
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
@@ -133,11 +167,16 @@ private fun ProjectSelector(
     val noProjectMenuLabel = "[$noProjectLabel]"
     val selectorWidth = 220.dp
     val menuWidth = 220.dp
-    val selectedLabel = projects
+    val hasProjects = projects.isNotEmpty()
+    val selectedProject = projects
         .firstOrNull { it.name == selectedProjectName }
-        ?.name
-        ?.uppercase()
-        ?: noProjectLabel
+    val selectedLabel = selectedProject?.name?.uppercase() ?: noProjectLabel
+    val selectorTextColor = if (selectedProject == null) {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
+    val selectorEnabled = enabled && hasProjects
 
     Box(
         modifier = Modifier.width(selectorWidth),
@@ -151,7 +190,7 @@ private fun ProjectSelector(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
                 )
-                .clickable(enabled = enabled) { expanded = true }
+                .clickable(enabled = selectorEnabled) { expanded = true }
                 .padding(horizontal = CleepSpacing.space3, vertical = CleepSpacing.space2),
             horizontalArrangement = Arrangement.spacedBy(CleepSpacing.space2),
             verticalAlignment = Alignment.CenterVertically,
@@ -160,19 +199,23 @@ private fun ProjectSelector(
                 text = selectedLabel,
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = selectorTextColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = "v",
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (selectorEnabled) {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
+                },
             )
         }
 
         DropdownMenu(
-            expanded = expanded,
+            expanded = expanded && selectorEnabled,
             onDismissRequest = { expanded = false },
             offset = DpOffset(x = selectorWidth - menuWidth, y = 0.dp),
             modifier = Modifier

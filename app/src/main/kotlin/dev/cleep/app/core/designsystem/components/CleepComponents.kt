@@ -206,7 +206,10 @@ fun CleepUnderlineField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     enabled: Boolean = true,
     showIndicator: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
 ) {
+    val textFieldInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
+
     TextField(
         value = value,
         onValueChange = onValueChange,
@@ -243,6 +246,7 @@ fun CleepUnderlineField(
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             cursorColor = MaterialTheme.colorScheme.primary,
         ),
+        interactionSource = textFieldInteractionSource,
     )
 }
 
