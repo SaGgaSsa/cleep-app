@@ -189,6 +189,7 @@ fun CleepUnderlineField(
     maxLines: Int = Int.MAX_VALUE,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     enabled: Boolean = true,
+    showIndicator: Boolean = true,
 ) {
     TextField(
         value = value,
@@ -215,9 +216,13 @@ fun CleepUnderlineField(
             unfocusedContainerColor = Color.Transparent,
             disabledContainerColor = Color.Transparent,
             errorContainerColor = Color.Transparent,
-            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
-            disabledIndicatorColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.45f),
+            focusedIndicatorColor = if (showIndicator) MaterialTheme.colorScheme.primary else Color.Transparent,
+            unfocusedIndicatorColor = if (showIndicator) MaterialTheme.colorScheme.outline else Color.Transparent,
+            disabledIndicatorColor = if (showIndicator) {
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)
+            } else {
+                Color.Transparent
+            },
             focusedTextColor = MaterialTheme.colorScheme.onSurface,
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             cursorColor = MaterialTheme.colorScheme.primary,
