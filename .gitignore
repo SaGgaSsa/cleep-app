@@ -1,0 +1,64 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+**/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android artifacts
+/android/app/debug/
+/android/app/profile/
+/android/app/release/
+/android/.gradle/
+/android/app/src/main/java/io/flutter/plugins/
+*.Zone.Identifier
+*:Zone.Identifier
+
+# Local properties (machine-specific, contains Flutter SDK path)
+android/local.properties
+
+# Google services (contains API keys — add manually per environment)
+google-services.json
+**/google-services.json
+
+# Local Dart defines for development
+dart_defines.dev.json
+
+# Android native local environment
+.env.dev
+local.properties
+
+# Android / Gradle local state
+.gradle/
+.gradle-local/
+
+# Temporary design workspace
+UI_TEMP/
