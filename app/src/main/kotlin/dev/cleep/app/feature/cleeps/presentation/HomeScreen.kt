@@ -53,6 +53,7 @@ fun HomeScreen(
     val canSave = trimmedContent.length >= minCleepLength && !state.isCreating
     val genericCreateError = stringResource(R.string.common_error, "Create failed")
     val noProjectLabel = stringResource(R.string.home_project_no_project)
+    val editorCounterInset = CleepSpacing.space10
     val editorInteractionSource = remember { MutableInteractionSource() }
     val editorFocused by editorInteractionSource.collectIsFocusedAsState()
     val editorPanelAlpha by animateFloatAsState(
@@ -115,8 +116,9 @@ fun HomeScreen(
                 CleepUnderlineField(
                     value = content,
                     onValueChange = { content = it },
-                    modifier = Modifier.fillMaxSize(),
-                    placeholder = stringResource(R.string.home_input_hint),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = editorCounterInset),
                     minLines = 12,
                     maxLines = Int.MAX_VALUE,
                     keyboardOptions = KeyboardOptions.Default,
