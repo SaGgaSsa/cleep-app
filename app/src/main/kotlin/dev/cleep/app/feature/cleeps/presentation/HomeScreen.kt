@@ -1,5 +1,7 @@
 package dev.cleep.app.feature.cleeps.presentation
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -53,6 +55,11 @@ fun HomeScreen(
     val noProjectLabel = stringResource(R.string.home_project_no_project)
     val editorInteractionSource = remember { MutableInteractionSource() }
     val editorFocused by editorInteractionSource.collectIsFocusedAsState()
+    val editorPanelAlpha by animateFloatAsState(
+        targetValue = if (editorFocused) 1f else 0.62f,
+        animationSpec = tween(durationMillis = 180),
+        label = "editorPanelAlpha",
+    )
 
     Column(
         modifier = modifier
@@ -101,7 +108,7 @@ fun HomeScreen(
                         MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.18f)
                     },
                 ),
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            color = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = editorPanelAlpha),
             contentPadding = PaddingValues(0.dp),
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
