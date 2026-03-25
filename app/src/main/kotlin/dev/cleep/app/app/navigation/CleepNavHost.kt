@@ -23,6 +23,7 @@ import dev.cleep.app.feature.cleeps.presentation.CleepsListScreen
 import dev.cleep.app.feature.cleeps.presentation.CleepsUiState
 import dev.cleep.app.feature.cleeps.presentation.HomeScreen
 import dev.cleep.app.feature.settings.presentation.SettingsScreen
+import dev.cleep.app.feature.settings.presentation.SettingsUiState
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -30,11 +31,13 @@ fun CleepNavHost(
     navController: NavHostController = rememberNavController(),
     authState: AuthUiState,
     cleepsState: CleepsUiState,
+    settingsState: SettingsUiState,
     scope: CoroutineScope,
     onGoogleLoginClick: (Activity) -> Unit,
     onGitHubLoginClick: (Activity) -> Unit,
     onLogoutClick: () -> Unit,
     onRefreshCleeps: suspend () -> Unit,
+    onRefreshSettings: suspend () -> Unit,
     onCreateCleep: suspend (String) -> Result<Unit>,
     onSelectProject: (String?) -> Unit,
     onDeleteCleep: suspend (String) -> Result<Unit>,
@@ -91,6 +94,8 @@ fun CleepNavHost(
             AuthenticatedScaffold(navController = navController) { innerModifier, _ ->
                 SettingsScreen(
                     user = authState.user,
+                    state = settingsState,
+                    onRefreshUsage = onRefreshSettings,
                     onLogoutClick = onLogoutClick,
                     modifier = innerModifier,
                 )

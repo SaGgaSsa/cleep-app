@@ -1,11 +1,13 @@
 package dev.cleep.app.feature.settings.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -29,10 +32,16 @@ import dev.cleep.app.feature.auth.domain.AuthUser
 @Composable
 fun SettingsScreen(
     user: AuthUser?,
+    state: SettingsUiState,
+    onRefreshUsage: suspend () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        onRefreshUsage()
+    }
 
     CleepScreenScaffold(
         modifier = modifier,
@@ -77,6 +86,47 @@ fun SettingsScreen(
             }
         }
 
+        CleepPanel(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surfaceContainer,
+        ) {
+            if (state.isLoading && state.usage == null) {
+                Text(
+                    text = stringResource(R.string.settings_usage_loading),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else {
+                state.usage?.let { usage ->
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(CleepSpacing.space3),
+                    ) {
+                        UsageRow(
+                            label = stringResource(R.string.settings_usage_cleeps_today),
+                            value = usage.dailyCleepsValue(),
+                        )
+                        UsageRow(
+                            label = stringResource(R.string.settings_usage_active_projects),
+                            value = usage.activeProjectsValue(),
+                        )
+                        UsageRow(
+                            label = stringResource(R.string.settings_usage_archived_history),
+                            value = usage.archivedHistoryValue(),
+                        )
+                    }
+                }
+            }
+        }
+
+        state.errorMessage?.let { errorMessage ->
+            Text(
+                text = stringResource(R.string.settings_usage_error, errorMessage),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+
         CleepPrimaryButton(
             text = stringResource(R.string.settings_sign_out),
             onClick = { showLogoutDialog = true },
@@ -103,6 +153,31 @@ fun SettingsScreen(
                     onClick = { showLogoutDialog = false },
                 )
             },
+        )
+    }
+}
+
+@Composable
+private fun UsageRow(
+    label: String,
+    value: String,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.End,
+            modifier = Modifier.widthIn(min = 72.dp),
         )
     }
 }
@@ -155,3 +230,14 @@ private fun AuthUser?.displayNameForSettings(): String? {
 
     return emailName
 }
+
+private fun dev.cleep.app.feature.settings.domain.SettingsUsage.dailyCleepsValue(): String =
+    "${dailyCleepsUsed.toAlignedCounter()}/${dailyCleepsLimit}"
+
+private fun dev.cleep.app.feature.settings.domain.SettingsUsage.activeProjectsValue(): String =
+    "${activeProjectsUsed.toAlignedCounter()}/${activeProjectsLimit?.toString() ?: "\u221e"}"
+
+private fun dev.cleep.app.feature.settings.domain.SettingsUsage.archivedHistoryValue(): String =
+    "${historyUsed.toAlignedCounter()}/${historyLimit}"
+
+private fun Int.toAlignedCounter(): String = toString().padStart(2, '0')

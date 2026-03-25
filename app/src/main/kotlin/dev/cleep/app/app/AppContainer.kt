@@ -14,6 +14,8 @@ import dev.cleep.app.feature.cleeps.data.CleepsApi
 import dev.cleep.app.feature.cleeps.data.CleepsRepositoryImpl
 import dev.cleep.app.feature.projects.data.ProjectsApi
 import dev.cleep.app.feature.projects.data.ProjectsRepositoryImpl
+import dev.cleep.app.feature.settings.data.SettingsApi
+import dev.cleep.app.feature.settings.data.SettingsRepositoryImpl
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -84,6 +86,10 @@ class AppContainer(context: Context) {
 
     val projectsRepository = ProjectsRepositoryImpl(
         api = retrofit.create(ProjectsApi::class.java),
+    )
+
+    val settingsUsageRepository = SettingsRepositoryImpl(
+        api = retrofit.create(SettingsApi::class.java),
     )
 
     private val healthApi = retrofit.create(HealthApi::class.java)

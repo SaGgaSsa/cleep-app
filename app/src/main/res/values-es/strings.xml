@@ -39,6 +39,11 @@
     <string name="settings_user_unknown">Usuario desconocido</string>
     <string name="settings_email_unknown">Email desconocido</string>
     <string name="settings_avatar_description">Avatar de perfil</string>
+    <string name="settings_usage_cleeps_today">Cleeps hoy</string>
+    <string name="settings_usage_active_projects">Projects activos</string>
+    <string name="settings_usage_archived_history">Historial archivado</string>
+    <string name="settings_usage_loading">CARGANDO...</string>
+    <string name="settings_usage_error">Error: %1$s</string>
     <string name="phase1_home_placeholder">Bootstrap de Fase 1. Esta pantalla deja armada la base del futuro flujo de creación.</string>
     <string name="phase1_feed_placeholder">Bootstrap de Fase 1. Esta tab recupera la shell autenticada y la navegación principal.</string>
     <string name="phase1_settings_placeholder">Bootstrap de Fase 1. Settings mostrará usuario y logout real en Fase 2 y 7.</string>

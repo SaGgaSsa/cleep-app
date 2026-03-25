@@ -39,6 +39,11 @@
     <string name="settings_user_unknown">Unknown user</string>
     <string name="settings_email_unknown">Unknown email</string>
     <string name="settings_avatar_description">Profile avatar</string>
+    <string name="settings_usage_cleeps_today">Cleeps today</string>
+    <string name="settings_usage_active_projects">Active projects</string>
+    <string name="settings_usage_archived_history">Archived history</string>
+    <string name="settings_usage_loading">LOADING...</string>
+    <string name="settings_usage_error">Error: %1$s</string>
     <string name="phase1_home_placeholder">Phase 1 bootstrap. This screen anchors the future create-cleep flow and visual system.</string>
     <string name="phase1_feed_placeholder">Phase 1 bootstrap. This tab restores the authenticated shell and feed navigation.</string>
     <string name="phase1_settings_placeholder">Phase 1 bootstrap. Settings will show user profile and logout in Phase 2 and 7.</string>
