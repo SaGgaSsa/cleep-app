@@ -3,7 +3,6 @@ package dev.cleep.app.feature.cleeps.presentation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -22,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.cleep.app.R
 import dev.cleep.app.core.designsystem.components.CleepPanel
+import dev.cleep.app.core.designsystem.components.CleepConfirmDialog
 import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
 import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
 import dev.cleep.app.core.designsystem.components.CleepSecondaryButton
@@ -115,40 +115,30 @@ fun CleepsListScreen(
         }
     }
 
-    if (pendingDeleteId != null) {
-        AlertDialog(
-            onDismissRequest = { pendingDeleteId = null },
-            title = { Text(stringResource(R.string.feed_delete_title)) },
-            text = { Text(stringResource(R.string.feed_delete_confirmation)) },
-            confirmButton = {
-                CleepPrimaryButton(
-                    text = stringResource(R.string.common_delete),
-                    onClick = {
-                        val id = pendingDeleteId ?: return@CleepPrimaryButton
-                        pendingDeleteId = null
-                        scope.launch {
-                            onDelete(id)
-                                .onSuccess { }
-                                .onFailure { error ->
-                                    snackbarHostState.showSnackbar(
-                                        message = deleteErrorTemplate.replace(
-                                            "%s",
-                                            error.message ?: "Delete failed",
-                                        ),
-                                    )
-                                }
-                        }
-                    },
-                )
-            },
-            dismissButton = {
-                CleepSecondaryButton(
-                    text = stringResource(R.string.common_cancel),
-                    onClick = { pendingDeleteId = null },
-                )
-            },
-        )
-    }
+    CleepConfirmDialog(
+        visible = pendingDeleteId != null,
+        title = stringResource(R.string.feed_delete_title),
+        message = stringResource(R.string.feed_delete_confirmation),
+        confirmLabel = stringResource(R.string.common_delete),
+        dismissLabel = stringResource(R.string.common_cancel),
+        onConfirm = {
+            val id = pendingDeleteId ?: return@CleepConfirmDialog
+            pendingDeleteId = null
+            scope.launch {
+                onDelete(id)
+                    .onSuccess { }
+                    .onFailure { error ->
+                        snackbarHostState.showSnackbar(
+                            message = deleteErrorTemplate.replace(
+                                "%s",
+                                error.message ?: "Delete failed",
+                            ),
+                        )
+                    }
+            }
+        },
+        onDismiss = { pendingDeleteId = null },
+    )
 }
 
 @Composable

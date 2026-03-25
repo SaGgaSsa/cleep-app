@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -247,6 +248,37 @@ fun CleepUnderlineField(
             cursorColor = MaterialTheme.colorScheme.primary,
         ),
         interactionSource = textFieldInteractionSource,
+    )
+}
+
+@Composable
+fun CleepConfirmDialog(
+    visible: Boolean,
+    title: String,
+    message: String,
+    confirmLabel: String,
+    dismissLabel: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    if (!visible) return
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = title) },
+        text = { Text(text = message) },
+        confirmButton = {
+            CleepPrimaryButton(
+                text = confirmLabel,
+                onClick = onConfirm,
+            )
+        },
+        dismissButton = {
+            CleepSecondaryButton(
+                text = dismissLabel,
+                onClick = onDismiss,
+            )
+        },
     )
 }
 

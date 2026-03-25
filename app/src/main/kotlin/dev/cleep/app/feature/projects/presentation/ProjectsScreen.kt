@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.BoxWithConstraints
 import dev.cleep.app.R
 import dev.cleep.app.core.designsystem.components.CleepPanel
+import dev.cleep.app.core.designsystem.components.CleepConfirmDialog
 import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
 import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
 import dev.cleep.app.core.designsystem.components.CleepSecondaryButton
@@ -157,35 +157,27 @@ fun ProjectsScreen(
         }
     }
 
-    if (confirmDelete && selectedProject != null) {
-        AlertDialog(
-            onDismissRequest = { confirmDelete = false },
-            title = { Text(stringResource(R.string.projects_delete_title)) },
-            text = { Text(stringResource(R.string.projects_delete_confirmation, selectedProject.name)) },
-            confirmButton = {
-                CleepPrimaryButton(
-                    text = stringResource(R.string.common_delete),
-                    onClick = {
-                        confirmDelete = false
-                        scope.launch {
-                            runCatching { onDelete() }
-                                .onFailure { error ->
-                                    snackbarHostState.showSnackbar(
-                                        message = errorTemplate.replace("%s", error.message ?: "Delete failed"),
-                                    )
-                                }
-                        }
-                    },
-                )
-            },
-            dismissButton = {
-                CleepSecondaryButton(
-                    text = stringResource(R.string.common_cancel),
-                    onClick = { confirmDelete = false },
-                )
-            },
-        )
-    }
+    CleepConfirmDialog(
+        visible = confirmDelete && selectedProject != null,
+        title = stringResource(R.string.projects_delete_title),
+        message = selectedProject?.let {
+            stringResource(R.string.projects_delete_confirmation, it.name)
+        } ?: "",
+        confirmLabel = stringResource(R.string.common_delete),
+        dismissLabel = stringResource(R.string.common_cancel),
+        onConfirm = {
+            confirmDelete = false
+            scope.launch {
+                runCatching { onDelete() }
+                    .onFailure { error ->
+                        snackbarHostState.showSnackbar(
+                            message = errorTemplate.replace("%s", error.message ?: "Delete failed"),
+                        )
+                    }
+            }
+        },
+        onDismiss = { confirmDelete = false },
+    )
 }
 
 @Composable

@@ -3,7 +3,6 @@ package dev.cleep.app.feature.settings.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import dev.cleep.app.R
 import dev.cleep.app.core.designsystem.components.CleepPanel
+import dev.cleep.app.core.designsystem.components.CleepConfirmDialog
 import dev.cleep.app.core.designsystem.components.CleepPrimaryButton
 import dev.cleep.app.core.designsystem.components.CleepScreenScaffold
 import dev.cleep.app.core.designsystem.components.CleepSecondaryButton
@@ -147,28 +147,18 @@ fun SettingsScreen(
         )
     }
 
-    if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = { Text(stringResource(R.string.settings_sign_out_title)) },
-            text = { Text(stringResource(R.string.settings_sign_out_confirmation)) },
-            confirmButton = {
-                CleepPrimaryButton(
-                    text = stringResource(R.string.settings_sign_out),
-                    onClick = {
-                        showLogoutDialog = false
-                        onLogoutClick()
-                    },
-                )
-            },
-            dismissButton = {
-                CleepSecondaryButton(
-                    text = stringResource(R.string.common_cancel),
-                    onClick = { showLogoutDialog = false },
-                )
-            },
-        )
-    }
+    CleepConfirmDialog(
+        visible = showLogoutDialog,
+        title = stringResource(R.string.settings_sign_out_title),
+        message = stringResource(R.string.settings_sign_out_confirmation),
+        confirmLabel = stringResource(R.string.settings_sign_out),
+        dismissLabel = stringResource(R.string.common_cancel),
+        onConfirm = {
+            showLogoutDialog = false
+            onLogoutClick()
+        },
+        onDismiss = { showLogoutDialog = false },
+    )
 }
 
 @Composable
