@@ -16,6 +16,7 @@ data class UsageResponseDto(
 
 @Serializable
 data class UsageLimitsDto(
+    val activeCleeps: Int,
     val dailyCleeps: Int,
     val activeProjects: Int? = null,
     val historyRetention: Int,
@@ -23,6 +24,7 @@ data class UsageLimitsDto(
 
 @Serializable
 data class UsageValuesDto(
+    val activeCleeps: Int,
     val dailyCleeps: Int,
     val activeProjects: Int,
     val historyCount: Int,

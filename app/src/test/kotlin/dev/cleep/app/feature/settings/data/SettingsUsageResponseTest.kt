@@ -19,11 +19,13 @@ class SettingsUsageResponseTest {
             """
             {
               "limits": {
+                "activeCleeps": 50,
                 "dailyCleeps": 100,
                 "activeProjects": null,
                 "historyRetention": 500
               },
               "usage": {
+                "activeCleeps": 8,
                 "dailyCleeps": 12,
                 "activeProjects": 7,
                 "historyCount": 42
@@ -32,9 +34,11 @@ class SettingsUsageResponseTest {
             """.trimIndent(),
         )
 
+        assertEquals(50, response.limits.activeCleeps)
         assertEquals(100, response.limits.dailyCleeps)
         assertNull(response.limits.activeProjects)
         assertEquals(500, response.limits.historyRetention)
+        assertEquals(8, response.usage.activeCleeps)
         assertEquals(12, response.usage.dailyCleeps)
         assertEquals(7, response.usage.activeProjects)
         assertEquals(42, response.usage.historyCount)

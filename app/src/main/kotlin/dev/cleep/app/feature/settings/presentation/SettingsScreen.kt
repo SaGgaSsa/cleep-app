@@ -103,6 +103,10 @@ fun SettingsScreen(
                         verticalArrangement = Arrangement.spacedBy(CleepSpacing.space3),
                     ) {
                         UsageRow(
+                            label = stringResource(R.string.settings_usage_active_cleeps),
+                            value = usage.activeCleepsValue(),
+                        )
+                        UsageRow(
                             label = stringResource(R.string.settings_usage_cleeps_today),
                             value = usage.dailyCleepsValue(),
                         )
@@ -230,6 +234,9 @@ private fun AuthUser?.displayNameForSettings(): String? {
 
     return emailName
 }
+
+private fun dev.cleep.app.feature.settings.domain.SettingsUsage.activeCleepsValue(): String =
+    "${activeCleepsUsed.toAlignedCounter()}/${activeCleepsLimit}"
 
 private fun dev.cleep.app.feature.settings.domain.SettingsUsage.dailyCleepsValue(): String =
     "${dailyCleepsUsed.toAlignedCounter()}/${dailyCleepsLimit}"

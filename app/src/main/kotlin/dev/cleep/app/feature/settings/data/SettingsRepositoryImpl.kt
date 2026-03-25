@@ -10,6 +10,8 @@ class SettingsRepositoryImpl(
 }
 
 private fun UsageResponseDto.toDomain(): SettingsUsage = SettingsUsage(
+    activeCleepsUsed = usage.activeCleeps,
+    activeCleepsLimit = limits.activeCleeps,
     dailyCleepsUsed = usage.dailyCleeps,
     dailyCleepsLimit = limits.dailyCleeps,
     activeProjectsUsed = usage.activeProjects,

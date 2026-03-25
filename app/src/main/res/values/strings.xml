@@ -39,6 +39,7 @@
     <string name="settings_user_unknown">Unknown user</string>
     <string name="settings_email_unknown">Unknown email</string>
     <string name="settings_avatar_description">Profile avatar</string>
+    <string name="settings_usage_active_cleeps">Active cleeps</string>
     <string name="settings_usage_cleeps_today">Cleeps today</string>
     <string name="settings_usage_active_projects">Active projects</string>
     <string name="settings_usage_archived_history">Archived history</string>
