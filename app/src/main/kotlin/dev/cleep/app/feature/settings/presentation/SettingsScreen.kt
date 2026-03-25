@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +39,8 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
+    val uriHandler = LocalUriHandler.current
+    val documentationUrl = stringResource(R.string.settings_documentation_url)
 
     LaunchedEffect(Unit) {
         onRefreshUsage()
@@ -130,6 +133,13 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.error,
             )
         }
+
+        CleepSecondaryButton(
+            text = stringResource(R.string.settings_documentation_cta),
+            onClick = {
+                uriHandler.openUri(documentationUrl)
+            },
+        )
 
         CleepPrimaryButton(
             text = stringResource(R.string.settings_sign_out),
