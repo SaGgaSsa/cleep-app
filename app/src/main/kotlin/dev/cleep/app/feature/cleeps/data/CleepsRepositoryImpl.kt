@@ -3,6 +3,7 @@ package dev.cleep.app.feature.cleeps.data
 import dev.cleep.app.feature.cleeps.domain.Cleep
 import dev.cleep.app.feature.cleeps.domain.CleepsRepository
 import java.time.Instant
+import retrofit2.HttpException
 
 class CleepsRepositoryImpl(
     private val api: CleepsApi,
@@ -12,16 +13,23 @@ class CleepsRepositoryImpl(
         .map(CleepDto::toDomain)
         .sortedByDescending(Cleep::createdAt)
 
-    override suspend fun createCleep(content: String, projectName: String?): Cleep =
+    override suspend fun createCleep(content: String, projectName: String?): Cleep = try {
         api.createCleep(
             CreateCleepRequest(
                 content = content,
                 project = projectName,
             ),
         ).toDomain()
+    } catch (exception: HttpException) {
+        throw parseCleepBackendError(exception, fallbackLabel = "Create failed")
+    }
 
     override suspend fun deleteCleep(id: String) {
-        api.deleteCleep(DeleteCleepRequest(ids = listOf(id)))
+        try {
+            api.deleteCleep(DeleteCleepRequest(ids = listOf(id)))
+        } catch (exception: HttpException) {
+            throw parseCleepBackendError(exception, fallbackLabel = "Delete failed")
+        }
     }
 }
 
