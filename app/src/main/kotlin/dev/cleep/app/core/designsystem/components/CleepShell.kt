@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
+import dev.cleep.app.R
 import dev.cleep.app.app.navigation.CleepDestination
 import dev.cleep.app.core.designsystem.theme.CleepSpacing
 
@@ -26,9 +28,10 @@ fun CleepBottomBar(
     modifier: Modifier = Modifier,
 ) {
     val items = listOf(
-        CleepDestination.Home to "NEW",
-        CleepDestination.Feed to "CLEEPS",
-        CleepDestination.Settings to "SETTINGS",
+        CleepDestination.Home to stringResource(R.string.nav_new).uppercase(),
+        CleepDestination.Feed to stringResource(R.string.nav_cleeps).uppercase(),
+        CleepDestination.Projects to stringResource(R.string.nav_projects).uppercase(),
+        CleepDestination.Settings to stringResource(R.string.nav_settings).uppercase(),
     )
 
     Row(

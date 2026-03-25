@@ -22,6 +22,8 @@ import dev.cleep.app.feature.auth.presentation.LoginScreen
 import dev.cleep.app.feature.cleeps.presentation.CleepsListScreen
 import dev.cleep.app.feature.cleeps.presentation.CleepsUiState
 import dev.cleep.app.feature.cleeps.presentation.HomeScreen
+import dev.cleep.app.feature.projects.presentation.ProjectsScreen
+import dev.cleep.app.feature.projects.presentation.ProjectsUiState
 import dev.cleep.app.feature.settings.presentation.SettingsScreen
 import dev.cleep.app.feature.settings.presentation.SettingsUiState
 import kotlinx.coroutines.CoroutineScope
@@ -31,6 +33,7 @@ fun CleepNavHost(
     navController: NavHostController = rememberNavController(),
     authState: AuthUiState,
     cleepsState: CleepsUiState,
+    projectsState: ProjectsUiState,
     settingsState: SettingsUiState,
     scope: CoroutineScope,
     onGoogleLoginClick: (Activity) -> Unit,
@@ -41,6 +44,12 @@ fun CleepNavHost(
     onCreateCleep: suspend (String) -> Result<Unit>,
     onSelectProject: (String?) -> Unit,
     onDeleteCleep: suspend (String) -> Result<Unit>,
+    onRefreshProjects: suspend () -> Unit,
+    onStartCreateProject: () -> Unit,
+    onStartEditProject: (dev.cleep.app.feature.projects.domain.Project) -> Unit,
+    onProjectDraftNameChange: (String) -> Unit,
+    onSaveProject: suspend () -> Unit,
+    onDeleteProject: suspend () -> Unit,
 ) {
     LaunchedEffect(authState.isAuthenticated) {
         val target = if (authState.isAuthenticated) CleepDestination.Home.route else CleepDestination.Login.route
@@ -90,6 +99,23 @@ fun CleepNavHost(
             }
         }
 
+        composable(CleepDestination.Projects.route) {
+            AuthenticatedScaffold(navController = navController) { innerModifier, snackbarHostState ->
+                ProjectsScreen(
+                    modifier = innerModifier,
+                    state = projectsState,
+                    snackbarHostState = snackbarHostState,
+                    scope = scope,
+                    onRefresh = onRefreshProjects,
+                    onStartCreate = onStartCreateProject,
+                    onStartEdit = onStartEditProject,
+                    onDraftNameChange = onProjectDraftNameChange,
+                    onSave = onSaveProject,
+                    onDelete = onDeleteProject,
+                )
+            }
+        }
+
         composable(CleepDestination.Settings.route) {
             AuthenticatedScaffold(navController = navController) { innerModifier, _ ->
                 SettingsScreen(
@@ -114,6 +140,7 @@ private fun AuthenticatedScaffold(
     val snackbarHostState = remember { SnackbarHostState() }
     val selectedDestination = when (currentRoute) {
         CleepDestination.Feed.route -> CleepDestination.Feed
+        CleepDestination.Projects.route -> CleepDestination.Projects
         CleepDestination.Settings.route -> CleepDestination.Settings
         else -> CleepDestination.Home
     }

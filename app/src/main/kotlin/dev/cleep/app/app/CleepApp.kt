@@ -19,6 +19,8 @@ import dev.cleep.app.feature.auth.presentation.AuthViewModel
 import dev.cleep.app.feature.auth.presentation.AuthViewModelFactory
 import dev.cleep.app.feature.cleeps.presentation.CleepsViewModel
 import dev.cleep.app.feature.cleeps.presentation.CleepsViewModelFactory
+import dev.cleep.app.feature.projects.presentation.ProjectsViewModel
+import dev.cleep.app.feature.projects.presentation.ProjectsViewModelFactory
 import dev.cleep.app.feature.settings.presentation.SettingsViewModel
 import dev.cleep.app.feature.settings.presentation.SettingsViewModelFactory
 
@@ -40,9 +42,16 @@ fun CleepApp() {
     val settingsViewModel: SettingsViewModel = viewModel(
         factory = SettingsViewModelFactory(appContainer.settingsUsageRepository),
     )
+    val projectsViewModel: ProjectsViewModel = viewModel(
+        factory = ProjectsViewModelFactory(
+            repository = appContainer.projectsRepository,
+            syncProjects = { cleepsViewModel.refresh() },
+        ),
+    )
     val authState by authViewModel.state.collectAsStateWithLifecycle()
     val cleepsState by cleepsViewModel.state.collectAsStateWithLifecycle()
     val settingsState by settingsViewModel.state.collectAsStateWithLifecycle()
+    val projectsState by projectsViewModel.state.collectAsStateWithLifecycle()
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
 
@@ -64,9 +73,11 @@ fun CleepApp() {
         if (warmupState.isReady && authState.isAuthenticated) {
             cleepsViewModel.refresh()
             settingsViewModel.refresh()
+            projectsViewModel.refresh()
         } else {
             cleepsViewModel.clear()
             settingsViewModel.clear()
+            projectsViewModel.clear()
         }
     }
 
@@ -83,6 +94,7 @@ fun CleepApp() {
                     navController = navController,
                     authState = authState,
                     cleepsState = cleepsState,
+                    projectsState = projectsState,
                     settingsState = settingsState,
                     scope = scope,
                     onGoogleLoginClick = authViewModel::signIn,
@@ -93,6 +105,12 @@ fun CleepApp() {
                     onCreateCleep = { content -> cleepsViewModel.createCleep(content).map { Unit } },
                     onSelectProject = cleepsViewModel::selectProject,
                     onDeleteCleep = cleepsViewModel::deleteCleep,
+                    onRefreshProjects = projectsViewModel::refresh,
+                    onStartCreateProject = projectsViewModel::startCreate,
+                    onStartEditProject = projectsViewModel::startEdit,
+                    onProjectDraftNameChange = projectsViewModel::updateDraftName,
+                    onSaveProject = projectsViewModel::saveProject,
+                    onDeleteProject = projectsViewModel::deleteSelectedProject,
                 )
             }
         }
